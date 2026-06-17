@@ -1,60 +1,51 @@
-/* ベースの背景を温かみのあるオフホワイトに */
+/* --- 全体デザイン --- */
 body { 
-    font-family: 'Helvetica Neue', Arial, sans-serif; 
     margin: 0; 
-    background-color: #fdfaf6; 
-    color: #5d4037; /* 土のような落ち着いた茶色 */
-    padding-bottom: 80px; 
+    font-family: 'Helvetica Neue', Arial, sans-serif; 
+    background-color: #fdfaf5; /* 和紙のような温かい白 */
+    color: #4a403a; 
 }
 
-/* カードを少し丸くし、境界線を柔らかく */
+/* --- カードデザインを「編み物風」に --- */
 .card { 
-    background: #ffffff; 
-    margin: 15px; 
-    padding: 20px; 
-    border-radius: 16px; 
-    border: 1px solid #efebe9;
-    box-shadow: 0 4px 6px rgba(93, 64, 55, 0.1); 
+    background: white; 
+    padding: 15px; 
+    margin: 15px 20px; 
+    border-radius: 15px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+    border: 1px solid #efeae3;
+    display: flex;
+    align-items: center;
 }
 
-h2 { color: #3e2723; border-bottom: 2px solid #a1887f; padding-bottom: 5px; }
-
-/* モーダルも角を丸く */
-.modal-content { 
-    background: #fffcf9; 
-    padding: 25px; 
-    border-radius: 20px; 
-    border: 2px solid #d7ccc8;
-}
-
-/* ボタンを少し丸く、農園カラーに */
-button {
-    background-color: #8d6e63;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-button:hover { background-color: #6d4c41; }
-
-/* FAB（右下のボタン）をさらに可愛い雰囲気に */
-.fab-nav { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 1000; }
-.fab-btn { 
-    width: 65px; 
-    height: 65px; 
-    border-radius: 50%; 
-    background: #8bc34a; /* 新緑のような明るい緑 */
-    color: white; 
-    font-size: 28px; 
-    box-shadow: 0 4px 10px rgba(139, 195, 74, 0.4); 
-}
-
-/* リストの見た目 */
-#todo-list div, #done-list div { 
-    margin: 10px 0; 
-    padding: 10px; 
-    background: #f1f8e9; 
+/* 画像を丸く小さく */
+.card img {
+    width: 70px; height: 70px;
     border-radius: 10px;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+/* --- ボタンのスタイルを統一 --- */
+.btn { 
+    background: #6a9ac2; /* 落ち着いた青 */
+    color: white;
+    border-radius: 20px; 
+    padding: 8px 16px;
+    font-weight: bold;
+}
+
+/* --- FAB（右下＋ボタン）の装飾 --- */
+.fab { 
+    background: #4a90e2; 
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+    font-size: 30px;
+}
+
+/* --- セクションタイトルの装飾 --- */
+.section-title { 
+    border-left: none; 
+    padding-left: 20px;
+    font-size: 1.2em;
+    color: #8b796d;
 }

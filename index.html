@@ -3,65 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>農業管理アプリ</title>
-    <link rel="stylesheet" href="style.css">
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        const firebaseConfig = {
-            apiKey: "AIzaSyAGGszvowjaBIvGojGYufSnnvKkcDPIKKI",
-            authDomain: "firestore-database-8d722.firebaseapp.com",
-            projectId: "firestore-database-8d722",
-            storageBucket: "firestore-database-8d722.firebasestorage.app",
-            messagingSenderId: "1084418476377",
-            appId: "1:1084418476377:web:396ca551db61a6a12da448",
-            measurementId: "G-ZME2SQ9TVS"
-        };
-        window.db = getFirestore(initializeApp(firebaseConfig));
-    </script>
+    <title>編み物記録 - 手芸アプリ風</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            margin: 0; font-family: 'Zen Maru Gothic', sans-serif; 
+            background-color: #fdfaf5; color: #5d554d; padding-bottom: 100px; 
+        }
+        .tab-content { display: none; padding: 20px; }
+        .tab-content.active { display: block; }
+        
+        /* カードデザイン */
+        .card { 
+            background: #ffffff; margin: 15px 0; padding: 15px; border-radius: 20px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #efeae3;
+            display: flex; align-items: center;
+        }
+        .card img { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; margin-right: 15px; }
+        .details { display: none; background: #fffdfa; padding: 15px; border-radius: 0 0 15px 15px; margin: -15px 5px 15px 5px; border: 1px solid #efeae3; border-top: none; }
+        
+        /* ボタン類 */
+        .btn { background: #8aa9c6; color: white; border-radius: 20px; border: none; padding: 8px 16px; font-weight: bold; cursor: pointer; }
+        .fab { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background: #6a9ac2; color: white; border-radius: 50%; border: none; font-size: 30px; box-shadow: 0 4px 15px rgba(106, 154, 194, 0.4); }
+        
+        /* フォーム系 */
+        input, select, textarea { padding: 12px; margin-bottom: 15px; width: 100%; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        h2 { letter-spacing: 2px; }
+        .section-title { font-size: 1.2rem; color: #8b796d; margin-top: 30px; margin-bottom: 10px; border-left: 5px solid #dcd3c9; padding-left: 10px; }
+    </style>
 </head>
 <body>
-    <main id="app-container">
-        <section id="today-task" class="card">
-            <h2>本日の作業</h2>
-            <h3>未達成</h3><div id="todo-list"></div>
-            <h3>完了</h3><div id="done-list"></div>
-        </section>
-        <section id="calendar" class="card">
-            <div id="calendar-view"></div>
-        </section>
-    </main>
 
-    <div id="entry-form" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h3 id="form-title">作業記録</h3>
-            <input type="hidden" id="edit-task-id">
-            <label>作物:</label><select id="task-crop"></select>
-            <label>日付:</label><input type="date" id="task-date">
-            <label>内容:</label><input type="text" id="task-text">
-            <button id="save-btn" onclick="saveTask()">保存</button>
-            <button id="update-btn" onclick="updateTask()" style="display:none;">更新</button>
-            <button id="delete-btn" onclick="deleteTask()" style="display:none; background:#ff5252; color:white;">削除</button>
-            <button onclick="closeForm()">閉じる</button>
+    <section id="home" class="tab-content active">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2>作品リスト</h2>
+            <button onclick="showTab('config')" style="background:none; border:none; font-size:24px;">⚙️</button>
         </div>
-    </div>
+        <select id="filterCategory" onchange="loadData()"><option value="全カテゴリー">全カテゴリー</option></select>
+        
+        <div class="section-title">制作中 🧶</div>
+        <div id="list-working"></div>
+        
+        <div class="section-title">完成品 🧶</div>
+        <div id="list-completed"></div>
 
-    <div id="settings-modal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h3>カテゴリー設定</h3>
-            <input type="text" id="new-crop" placeholder="作物名">
-            <input type="color" id="new-color" value="#4caf50">
-            <button onclick="addCategory()">追加</button>
-            <div id="crop-list" style="margin: 15px 0;"></div>
-            <button onclick="closeSettings()">閉じる</button>
-        </div>
-    </div>
+        <button class="fab" onclick="prepareAdd()">+</button>
+    </section>
 
-    <nav class="fab-nav">
-        <button class="fab-btn" onclick="openForm()">＋</button>
-        <button class="fab-btn" onclick="openSettings()">⚙️</button>
-    </nav>
-    <script type="module" src="script.js"></script>
+    <section id="add" class="tab-content">
+        <h2 id="formTitle">追加・編集</h2>
+        <form id="knitForm">
+            <input type="text" id="title" placeholder="作品名" required>
+            <select id="categorySelect"></select>
+            <input type="text" id="purpose" placeholder="目的">
+            <input type="text" id="materials" placeholder="材料">
+            <label>開始日</label><input type="date" id="startDate" required>
+            <label>完了日</label><input type="date" id="endDate">
+            <textarea id="memo" placeholder="メモ"></textarea>
+            <button type="submit" class="btn" style="width:100%;">保存する</button>
+            <button type="button" class="btn" style="background:#a9a9a9; width:100%; margin-top:10px;" onclick="showTab('home')">戻る</button>
+        </form>
+    </section>
+
+    <section id="config" class="tab-content">
+        <h2>カテゴリー設定</h2>
+        <input type="text" id="newCat" placeholder="新規カテゴリー">
+        <button class="btn" onclick="addCategory()">追加</button>
+        <div id="catList" style="margin-top:20px;"></div>
+        <button class="btn" style="background:#a9a9a9; margin-top:20px;" onclick="showTab('home')">戻る</button>
+    </section>
+
+    <script>
+        let knits = JSON.parse(localStorage.getItem('knits') || '[]');
+        let categories = JSON.parse(localStorage.getItem('categories') || '["未分類", "小物", "ウェア"]');
+        let editIndex = -1;
+
+        function loadData() {
+            const filter = document.getElementById('filterCategory').value;
+            const filtered = (filter === "全カテゴリー") ? [...knits] : knits.filter(k => k.category === filter);
+            const workingDiv = document.getElementById('list-working');
+            const completedDiv = document.getElementById('list-completed');
+            
+            workingDiv.innerHTML = ""; completedDiv.innerHTML = "";
+
+            filtered.forEach((k, i) => {
+                const idx = knits.indexOf(k);
+                const html = `
+                <div class="card">
+                    <div style="flex-grow:1;">
+                        <strong>${k.title}</strong>
+                        <div style="font-size: 0.8em; color: #777;">${k.category}</div>
+                    </div>
+                    <button class="btn" onclick="toggleDetails(${idx})">詳細</button>
+                </div>
+                <div id="details-${idx}" class="details">
+                    <p>目的: ${k.purpose}<br>材料: ${k.materials}<br>期間: ${k.startDate} ～ ${k.endDate || "..."}</p>
+                    <button class="btn" style="background:#ffc107;" onclick="editItem(${idx})">編集</button>
+                </div>`;
+                if (!k.endDate || k.endDate === "") workingDiv.innerHTML += html;
+                else completedDiv.innerHTML += html;
+            });
+        }
+
+        function toggleDetails(i) {
+            const el = document.getElementById(`details-${i}`);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function prepareAdd() { editIndex = -1; document.getElementById('knitForm').reset(); showTab('add'); }
+        function editItem(i) { editIndex = i; const k = knits[i]; document.getElementById('title').value=k.title; document.getElementById('categorySelect').value=k.category; document.getElementById('purpose').value=k.purpose; document.getElementById('materials').value=k.materials; document.getElementById('startDate').value=k.startDate; document.getElementById('endDate').value=k.endDate; document.getElementById('memo').value=k.memo; showTab('add'); }
+        
+        document.getElementById('knitForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const item = { title:document.getElementById('title').value, category:document.getElementById('categorySelect').value, purpose:document.getElementById('purpose').value, materials:document.getElementById('materials').value, startDate:document.getElementById('startDate').value, endDate:document.getElementById('endDate').value, memo:document.getElementById('memo').value };
+            if(editIndex !== -1) knits[editIndex] = item; else knits.push(item);
+            localStorage.setItem('knits', JSON.stringify(knits));
+            showTab('home'); loadData();
+        });
+
+        function showTab(id) { document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        function updateUI() {
+            document.getElementById('categorySelect').innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+            document.getElementById('filterCategory').innerHTML = ['全カテゴリー', ...categories].map(c => `<option value="${c}">${c}</option>`).join('');
+            document.getElementById('catList').innerHTML = categories.map((c, i) => `<div style="margin-bottom:10px;">${c} ${i>0 ? `<button class="btn" style="background:#e74c3c; padding:4px 8px;" onclick="deleteCategory(${i})">削除</button>` : ''}</div>`).join('');
+            loadData();
+        }
+        function addCategory() { const val = document.getElementById('newCat').value.trim(); if(val && !categories.includes(val)) { categories.push(val); localStorage.setItem('categories', JSON.stringify(categories)); updateUI(); } }
+        function deleteCategory(i) { categories.splice(i, 1); localStorage.setItem('categories', JSON.stringify(categories)); updateUI(); }
+        
+        updateUI();
+    </script>
 </body>
 </html>
