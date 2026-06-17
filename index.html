@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>農業管理アプリ</title>
+    <link rel="stylesheet" href="style.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGGszvowjaBIvGojGYufSnnvKkcDPIKKI",
+            authDomain: "firestore-database-8d722.firebaseapp.com",
+            projectId: "firestore-database-8d722",
+            storageBucket: "firestore-database-8d722.firebasestorage.app",
+            messagingSenderId: "1084418476377",
+            appId: "1:1084418476377:web:396ca551db61a6a12da448",
+            measurementId: "G-ZME2SQ9TVS"
+        };
+        window.db = getFirestore(initializeApp(firebaseConfig));
+    </script>
+</head>
+<body>
+    <main id="app-container">
+        <section id="today-task" class="card">
+            <h2>本日の作業</h2>
+            <h3>未達成</h3><div id="todo-list"></div>
+            <h3>完了</h3><div id="done-list"></div>
+        </section>
+        <section id="calendar" class="card">
+            <div id="calendar-view"></div>
+        </section>
+    </main>
+
+    <div id="entry-form" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3 id="form-title">作業記録</h3>
+            <input type="hidden" id="edit-task-id">
+            <label>作物:</label><select id="task-crop"></select>
+            <label>日付:</label><input type="date" id="task-date">
+            <label>内容:</label><input type="text" id="task-text">
+            <button id="save-btn" onclick="saveTask()">保存</button>
+            <button id="update-btn" onclick="updateTask()" style="display:none;">更新</button>
+            <button id="delete-btn" onclick="deleteTask()" style="display:none; background:#ff5252; color:white;">削除</button>
+            <button onclick="closeForm()">閉じる</button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>カテゴリー設定</h3>
+            <input type="text" id="new-crop" placeholder="作物名">
+            <input type="color" id="new-color" value="#4caf50">
+            <button onclick="addCategory()">追加</button>
+            <div id="crop-list" style="margin: 15px 0;"></div>
+            <button onclick="closeSettings()">閉じる</button>
+        </div>
+    </div>
+
+    <nav class="fab-nav">
+        <button class="fab-btn" onclick="openForm()">＋</button>
+        <button class="fab-btn" onclick="openSettings()">⚙️</button>
+    </nav>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
