@@ -1,51 +1,98 @@
-/* --- 全体デザイン --- */
+/* ベースの背景を温かみのあるオフホワイトに */
 body { 
-    margin: 0; 
     font-family: 'Helvetica Neue', Arial, sans-serif; 
-    background-color: #fdfaf5; /* 和紙のような温かい白 */
-    color: #4a403a; 
+    margin: 0; 
+    background-color: #fdfaf6; 
+    color: #5d4037; /* 土のような落ち着いた茶色 */
+    padding-bottom: 80px; 
 }
 
-/* --- カードデザインを「編み物風」に --- */
+/* カードを少し丸くし、境界線を柔らかく */
 .card { 
-    background: white; 
-    padding: 15px; 
-    margin: 15px 20px; 
-    border-radius: 15px; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
-    border: 1px solid #efeae3;
-    display: flex;
-    align-items: center;
+    background: #ffffff; 
+    margin: 15px; 
+    padding: 20px; 
+    border-radius: 16px; 
+    border: 1px solid #efebe9;
+    box-shadow: 0 4px 6px rgba(93, 64, 55, 0.1); 
 }
 
-/* 画像を丸く小さく */
-.card img {
-    width: 70px; height: 70px;
-    border-radius: 10px;
-    object-fit: cover;
-    margin-right: 15px;
+h2 { color: #3e2723; border-bottom: 2px solid #a1887f; padding-bottom: 5px; }
+
+/* --- モーダル（ポップアップ）全体の背景（画面全体を覆う暗幕） --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* 背景を少し薄暗くして中央を目立たせる */
+    display: none; /* 初期状態は非表示（JSでflexに切り替わります） */
+    justify-content: center; /* 左右の中央配置 */
+    align-items: center;     /* 上下の中央配置 */
+    z-index: 2000; /* カレンダーやボタンよりも手前に表示 */
 }
 
-/* --- ボタンのスタイルを統一 --- */
-.btn { 
-    background: #6a9ac2; /* 落ち着いた青 */
-    color: white;
+/* --- ポップアップされる白いカード部分 --- */
+.modal-content { 
+    background: #fffcf9; 
+    padding: 25px; 
     border-radius: 20px; 
-    padding: 8px 16px;
+    border: 2px solid #d7ccc8;
+    width: 90%;           /* スマホ画面でもはみ出さないよう90%に */
+    max-width: 400px;     /* パソコンで見たときに広がりすぎない制限 */
+    box-shadow: 0 10px 25px rgba(93, 64, 55, 0.2); /* 影をつけて浮いている感を出す */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column; /* 中の項目を上から順に並べる */
+    gap: 10px;              /* 項目同士の間隔を少し空ける */
+}
+
+/* ポップアップ内の入力欄の見た目調整 */
+.modal-content label {
     font-weight: bold;
+    margin-top: 5px;
+}
+.modal-content input[type="text"],
+.modal-content input[type="date"],
+.modal-content select {
+    padding: 8px;
+    border: 1px solid #d7ccc8;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #5d4037;
+    font-size: 16px;
 }
 
-/* --- FAB（右下＋ボタン）の装飾 --- */
-.fab { 
-    background: #4a90e2; 
-    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
-    font-size: 30px;
+/* ボタンを少し丸く、農園カラーに */
+button {
+    background-color: #8d6e63;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 14px;
+}
+button:hover { background-color: #6d4c41; }
+
+/* FAB（右下のボタン）をさらに可愛い雰囲気に */
+.fab-nav { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 1000; }
+.fab-btn { 
+    width: 65px; 
+    height: 65px; 
+    border-radius: 50%; 
+    background: #8bc34a; /* 新緑のような明るい緑 */
+    color: white; 
+    font-size: 28px; 
+    box-shadow: 0 4px 10px rgba(139, 195, 74, 0.4); 
 }
 
-/* --- セクションタイトルの装飾 --- */
-.section-title { 
-    border-left: none; 
-    padding-left: 20px;
-    font-size: 1.2em;
-    color: #8b796d;
+/* リストの見た目 */
+#todo-list div, #done-list div { 
+    margin: 10px 0; 
+    padding: 10px; 
+    background: #f1f8e9; 
+    border-radius: 10px;
 }
