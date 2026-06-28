@@ -31,8 +31,10 @@
             <select id="task-crop"></select>
             <label>日付:</label>
             <input type="date" id="task-date">
-            <label>内容:</label>
+            <label>作業内容:</label>
             <input type="text" id="task-text">
+            <label>メモ:</label>
+            <input type="text" id="task-memo" placeholder="備考など">
             <button id="save-btn" onclick="saveTask()">保存</button>
             <button id="update-btn" onclick="updateTask()" style="display:none;">更新</button>
             <button id="delete-btn" onclick="deleteTask()" style="display:none; background:#ff5252; color:white;">削除</button>

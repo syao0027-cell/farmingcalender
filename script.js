@@ -1,160 +1,106 @@
-// --- Supabaseの初期化 ---
-const supabaseUrl = 'https://ekezpddmglfdfizmghvu.supabase.co';
-const supabaseKey = 'sb_publishable_AKQc64I2A6u-lw2oNyDKMA__F1x3J3E';
-const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
 let calendar;
-let crops = [{ name: "その他", color: "#bdbdbd" }];
+let crops = JSON.parse(localStorage.getItem('crops')) || [{ name: "その他", color: "#bdbdbd" }];
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        // 1. カテゴリー情報をSupabaseから取得して確実にセット
-        const { data: cropsData, error: cropsError } = await supabaseClient.from('crops').select('*');
-        if (cropsError) throw cropsError;
-        
-        // データベースにデータがあれば、初期値（その他）の後ろに結合する、または置き換える
-        if (cropsData && cropsData.length > 0) {
-            crops = cropsData;
+document.addEventListener('DOMContentLoaded', () => {
+    updateCropSelect();
+    calendar = new FullCalendar.Calendar(document.getElementById('calendar-view'), {
+        initialView: 'dayGridMonth',
+        events: JSON.parse(localStorage.getItem('tasks')) || [],
+        eventClick: (info) => openEditForm(info.event),
+        eventDidMount: (info) => {
+            const cropName = info.event.extendedProps.crop || "その他";
+            const cropData = crops.find(c => c.name === cropName);
+            info.el.style.backgroundColor = cropData ? cropData.color : "#bdbdbd";
+            if (info.event.extendedProps.completed) info.el.innerHTML = "✔ " + info.event.title;
         }
-        // 画面のセレクトボックスを先に作成
-        updateCropSelect();
-
-        // 2. カレンダーの初期化
-        calendar = new FullCalendar.Calendar(document.getElementById('calendar-view'), {
-            initialView: 'dayGridMonth',
-            events: async (fetchInfo, successCallback) => {
-                try {
-                    const { data, error } = await supabaseClient.from('tasks').select('*');
-                    if (error) throw error;
-                    if (!data) return successCallback([]);
-                    const events = data.map(t => ({
-                        id: t.id,
-                        title: t.title,
-                        start: t.start_date,
-                        extendedProps: { crop: t.crop, completed: t.completed }
-                    }));
-                    successCallback(events);
-                } catch (err) {
-                    console.error("カレンダーデータの取得に失敗しました:", err);
-                    successCallback([]);
-                }
-            },
-            eventClick: (info) => openEditForm(info.event),
-            eventDidMount: (info) => {
-                const cropName = info.event.extendedProps.crop || "その他";
-                const cropData = crops.find(c => c.name === cropName);
-                info.el.style.backgroundColor = cropData ? cropData.color : "#bdbdbd";
-                if (info.event.extendedProps.completed) info.el.innerHTML = "✔ " + info.event.title;
-            }
-        });
-        calendar.render();
-        updateTodayTasks();
-    } catch (err) {
-        console.error("アプリの初期化中にエラーが発生しました:", err);
-    }
+    });
+    calendar.render();
+    updateTodayTasks();
 });
 
 // --- カテゴリー関連 ---
 function updateCropSelect() {
     const select = document.getElementById('task-crop');
-    if(select) {
-        select.innerHTML = crops.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-    }
+    if(select) select.innerHTML = crops.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
 }
-
-async function addCategory() {
+function addCategory() {
     const name = document.getElementById('new-crop').value;
     const color = document.getElementById('new-color').value;
     if(name && !crops.find(c => c.name === name)) {
-        // ★ await を使って、Supabaseへの登録が「完全に終わるのを待って」から次に進むようにしました
-        const { error } = await supabaseClient.from('crops').insert([{ name, color }]);
-        if (error) {
-            alert("カテゴリーの追加に失敗しました: " + error.message);
-        } else {
-            // 登録が成功したら画面をリロード
-            location.reload();
-        }
+        crops.push({ name, color });
+        localStorage.setItem('crops', JSON.stringify(crops));
+        updateCropSelect(); renderCropList();
+        document.getElementById('new-crop').value = '';
     }
 }
-
 function renderCropList() {
     const list = document.getElementById('crop-list');
-    if(list) {
-        list.innerHTML = crops.map(c => `<div>${c.name} <span style="background:${c.color}; padding:0 10px; margin: 0 5px; border-radius:4px;"> </span> <button onclick="deleteCategory('${c.name}')" style="padding: 2px 8px; background:#ff5252;">×</button></div>`).join('');
-    }
+    list.innerHTML = crops.map(c => `<div>${c.name} <span style="background:${c.color}; padding:0 10px;"> </span> <button onclick="deleteCategory('${c.name}')">×</button></div>`).join('');
 }
-
-async function deleteCategory(name) {
+function deleteCategory(name) {
     if(name === "その他") return alert("その他は削除できません");
-    const { error } = await supabaseClient.from('crops').delete().eq('name', name);
-    if (error) {
-        alert("削除に失敗しました: " + error.message);
-    } else {
-        location.reload();
-    }
+    crops = crops.filter(c => c.name !== name);
+    localStorage.setItem('crops', JSON.stringify(crops));
+    updateCropSelect(); renderCropList();
 }
 
 // --- タスク・フォーム管理 ---
 function openEditForm(event) {
-    updateCropSelect(); 
-    document.getElementById('form-title').innerText = "作業内容";
+    document.getElementById('form-title').innerText = "作業内容の編集";
     document.getElementById('edit-task-id').value = event.id;
     document.getElementById('task-date').value = event.startStr;
     document.getElementById('task-text').value = event.title;
+    document.getElementById('task-memo').value = event.extendedProps.memo || ""; // メモをフォームに読み込む
     document.getElementById('task-crop').value = event.extendedProps.crop || "その他";
     document.getElementById('save-btn').style.display = 'none';
     document.getElementById('update-btn').style.display = 'inline-block';
     document.getElementById('delete-btn').style.display = 'inline-block';
-    document.getElementById('entry-form').style.display = 'flex'; 
+    openForm();
 }
-
-async function saveTask() {
+function saveTask() {
     const title = document.getElementById('task-text').value;
-    const start_date = document.getElementById('task-date').value;
+    const memo = document.getElementById('task-memo').value; // メモの値を取得
+    const start = document.getElementById('task-date').value;
     const crop = document.getElementById('task-crop').value;
-    if(!start_date || !title) return alert("入力してください");
-    
-    const { error } = await supabaseClient.from('tasks').insert([{ title, start_date, crop, completed: false }]);
-    if (error) {
-        alert("データの保存に失敗しました: " + error.message);
-    } else {
-        location.reload();
-    }
-}
-
-async function updateTask() {
-    const id = document.getElementById('edit-task-id').value;
-    const title = document.getElementById('task-text').value;
-    const start_date = document.getElementById('task-date').value;
-    const crop = document.getElementById('task-crop').value;
-    
-    await supabaseClient.from('tasks').update({ title, start_date, crop }).eq('id', id);
+    if(!start || !title) return alert("入力してください");
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks.push({ id: Date.now().toString(), title, start, completed: false, extendedProps: { crop, memo } }); // メモをデータに追加
+    localStorage.setItem('tasks', JSON.stringify(tasks));
     location.reload();
 }
-
-async function deleteTask() {
+function updateTask() {
     const id = document.getElementById('edit-task-id').value;
-    await supabaseClient.from('tasks').delete().eq('id', id);
+    let tasks = JSON.parse(localStorage.getItem('tasks'));
+    const idx = tasks.findIndex(t => t.id === id);
+    tasks[idx].title = document.getElementById('task-text').value;
+    tasks[idx].start = document.getElementById('task-date').value;
+    tasks[idx].extendedProps.crop = document.getElementById('task-crop').value;
+    tasks[idx].extendedProps.memo = document.getElementById('task-memo').value; // メモの更新
+    localStorage.setItem('tasks', JSON.stringify(tasks));
     location.reload();
 }
-
-async function updateTodayTasks() {
-    const d = new Date();
-    const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    
-    const { data: tasks, error } = await supabaseClient.from('tasks').select('*');
-    if (error) return console.error("本日の作業の取得に失敗しました:", error);
-    
+function deleteTask() {
+    const id = document.getElementById('edit-task-id').value;
+    let tasks = JSON.parse(localStorage.getItem('tasks')).filter(t => t.id !== id);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    location.reload();
+}
+function updateTodayTasks() {
+    const today = new Date().toISOString().split('T')[0];
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
     const todo = document.getElementById('todo-list'), done = document.getElementById('done-list');
-    if (!todo || !done || !tasks) return;
-    
+    if (!todo || !done) return;
     todo.innerHTML = ""; done.innerHTML = "";
-    tasks.filter(t => t.start_date === today).forEach(t => {
+    tasks.filter(t => t.start === today).forEach(t => {
         const div = document.createElement('div');
-        const displayLabel = `【${t.crop}】${t.title}`;
+        const crop = t.extendedProps.crop || "その他";
+        
+        // メモがあれば改行して小さく表示する設定
+        const memoText = t.extendedProps.memo ? `<br><small style="color: #795548; font-size: 12px;">📝 ${t.extendedProps.memo}</small>` : "";
+        const displayLabel = `【${crop}】${t.title}${memoText}`; 
         
         if(!t.completed) {
-            div.innerHTML = `${displayLabel} <button onclick="confirmComplete('${t.id}')">完了</button>`;
+            div.innerHTML = `<div style="margin-bottom: 5px;">${displayLabel}</div> <button onclick="confirmComplete('${t.id}')">完了</button>`;
             todo.appendChild(div);
         } else {
             div.innerHTML = `✔ ${displayLabel}`;
@@ -162,24 +108,15 @@ async function updateTodayTasks() {
         }
     });
 }
-
-async function confirmComplete(id) {
-    await supabaseClient.from('tasks').update({ completed: true }).eq('id', id);
+function confirmComplete(id) {
+    let tasks = JSON.parse(localStorage.getItem('tasks'));
+    tasks = tasks.map(t => t.id === id ? {...t, completed: true} : t);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
     location.reload();
 }
 
 // --- ユーティリティ ---
-function openForm() { 
-    updateCropSelect(); 
-    document.getElementById('form-title').innerText = "作業記録";
-    document.getElementById('edit-task-id').value = "";
-    document.getElementById('task-date').value = "";
-    document.getElementById('task-text').value = "";
-    document.getElementById('save-btn').style.display = 'inline-block';
-    document.getElementById('update-btn').style.display = 'none';
-    document.getElementById('delete-btn').style.display = 'none';
-    document.getElementById('entry-form').style.display = 'flex'; 
-}
-function closeForm() { document.getElementById('entry-form').style.display = 'none'; }
+function openForm() { document.getElementById('entry-form').style.display = 'flex'; }
+function closeForm() { document.getElementById('entry-form').style.display = 'none'; location.reload(); }
 function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; renderCropList(); }
 function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
