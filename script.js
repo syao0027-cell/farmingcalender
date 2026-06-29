@@ -3,7 +3,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 
 // Supabaseクライアントの初期化
-const supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
+supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
 
 let calendar;
 let crops = [];
