@@ -1,6 +1,6 @@
 // Netlifyの環境変数（隠し金庫）から安全に鍵を読み込む
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+const supabaseUrl = https://tscogqlhlavulqgncodj.supabase.co/rest/v1/
+const supabaseKey = sb_publishable_baybqGP9O1REnkNCL7m3CA_V_8obPrS;
 
 // Supabaseクライアントの初期化
 const supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
