@@ -2,7 +2,8 @@
 const supabaseUrl = 'https://tscogqlhlavulqgncodj.supabase.co';
 const supabaseKey = 'sb_publishable_baybqGP9O1REnkNCL7m3CA_V_8obPrS';
 
-supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
+// すでに読み込まれている「supabase」を使って初期化し、同じ変数に代入
+supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 let calendar;
 let crops = [];
