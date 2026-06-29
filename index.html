@@ -46,35 +46,42 @@
         </div>
     </div>
       
-    <div id="settings-modal" class="modal" style="display:none;">
-    <div class="modal-content">
+<div id="settings-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2>設定</h2>
 
-        <h2>設定</h2>
+            <div class="tab-buttons" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="tab-btn active" onclick="switchTab('crop-tab')">作物</button>
+                <button class="tab-btn" onclick="switchTab('member-tab')">担当者</button>
+                <button class="tab-btn" onclick="switchTab('area-tab')">エリア</button>
+            </div>
 
-        <h3>作物</h3>
-        <input type="text" id="new-crop" placeholder="作物名">
-        <input type="color" id="new-color" value="#4caf50">
-        <button onclick="addCategory()">追加</button>
-        <div id="crop-list" style="margin:15px 0;"></div>
+            <div id="crop-tab" class="tab-content">
+                <h3>作物管理</h3>
+                <input type="text" id="new-crop" placeholder="作物名">
+                <input type="color" id="new-color" value="#4caf50">
+                <button onclick="addCategory()">追加</button>
+                <div id="crop-list" style="margin:15px 0;"></div>
+            </div>
 
-        <hr>
+            <div id="member-tab" class="tab-content" style="display: none;">
+                <h3>担当者管理</h3>
+                <input type="text" id="new-member" placeholder="担当者名">
+                <button onclick="addMember()">追加</button>
+                <div id="member-list" style="margin:15px 0;"></div>
+            </div>
 
-        <h3>担当者</h3>
-        <input type="text" id="new-member" placeholder="担当者名">
-        <button onclick="addMember()">追加</button>
-        <div id="member-list" style="margin:15px 0;"></div>
+            <div id="area-tab" class="tab-content" style="display: none;">
+                <h3>エリア管理</h3>
+                <input type="text" id="new-area" placeholder="エリア名">
+                <button onclick="addArea()">追加</button>
+                <div id="area-list" style="margin:15px 0;"></div>
+            </div>
 
-        <hr>
-
-        <h3>エリア</h3>
-        <input type="text" id="new-area" placeholder="エリア名">
-        <button onclick="addArea()">追加</button>
-        <div id="area-list" style="margin:15px 0;"></div>
-
-        <button onclick="closeSettings()">閉じる</button>
-
+            <hr>
+            <button onclick="closeSettings()">閉じる</button>
+        </div>
     </div>
-</div>
 
     <nav class="fab-nav">
         <button class="fab-btn" onclick="openForm()">＋</button>

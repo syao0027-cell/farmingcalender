@@ -639,10 +639,12 @@ function closeForm() {
 
 
 function openSettings() {
-
     document.getElementById('settings-modal')
         .style.display = 'flex';
-
+    
+    // 開いたときに最初の「作物」タブボタンを緑色にしておく処理
+    switchTab('crop-tab'); 
+    
     renderCropList();
     renderMemberList();
     renderAreaList();
@@ -653,4 +655,33 @@ function closeSettings() {
 
     document.getElementById('settings-modal')
         .style.display = 'none';
+}
+
+// =========================
+// タブ切り替え処理（追加）
+// =========================
+
+function switchTab(tabId) {
+    // すべてのタブコンテンツを一旦非表示にする
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(content => {
+        content.style.display = 'none';
+    });
+
+    // すべてのタブボタンから active クラスを消す
+    const buttons = document.querySelectorAll('.tab-buttons .tab-btn');
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.backgroundColor = '#e0e0e0'; // 未選択のボタン色
+        btn.style.color = '#333';
+    });
+
+    // 選択されたタブコンテンツを表示する
+    document.getElementById(tabId).style.display = 'block';
+
+    // 押されたボタンをアクティブにする（見た目の変更）
+    const clickedBtn = event.currentTarget;
+    clickedBtn.classList.add('active');
+    clickedBtn.style.backgroundColor = '#4caf50'; // 選択されたボタン色（緑系）
+    clickedBtn.style.color = 'white';
 }

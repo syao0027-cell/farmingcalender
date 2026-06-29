@@ -173,3 +173,20 @@ button:hover { background-color: #6d4c41; }
     }
 
 }
+
+/* タブボタンの基本デザイン */
+.tab-buttons .tab-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    color: #333;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+/* マウスを乗せたとき */
+.tab-buttons .tab-btn:hover {
+    background-color: #d5d5d5;
+}
