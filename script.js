@@ -685,3 +685,38 @@ function switchTab(tabId) {
     clickedBtn.style.backgroundColor = '#4caf50'; // 選択されたボタン色（緑系）
     clickedBtn.style.color = 'white';
 }
+
+// =========================
+// タブ切り替え処理（安全版に修正）
+// =========================
+
+function switchTab(tabId) {
+    // すべてのタブコンテンツを一旦非表示にする
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(content => {
+        content.style.display = 'none';
+    });
+
+    // すべてのタブボタンから active クラスを消し、色をリセット
+    const buttons = document.querySelectorAll('.tab-buttons .tab-btn');
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.backgroundColor = '#e0e0e0'; 
+        btn.style.color = '#333';
+    });
+
+    // 選択されたタブコンテンツを表示する
+    const targetTab = document.getElementById(tabId);
+    if (targetTab) {
+        targetTab.style.display = 'block';
+    }
+
+    // 押されたボタンの見た目をアクティブ（緑色）にする
+    // 引数イベントに依存しないよう、onclick属性から直接判別できるように対応
+    const activeBtn = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(tabId));
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.style.backgroundColor = '#4caf50'; 
+        activeBtn.style.color = 'white';
+    }
+}
