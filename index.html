@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <main id="app-container">
+    <main id=\"app-container\">
         <section id="today-task" class="card">
             <h2>本日の作業</h2>
             <h3>未達成</h3>
@@ -36,8 +36,8 @@
             <label>日付:</label>
             <input type="date" id="task-date">
             <label>作業内容:</label>
-            <input type="text" id="task-text">
-            <label>メモ:</label>
+            <input type="text" id="task-text" placeholder="作業内容を入力">
+            <label>備考:</label>
             <input type="text" id="task-memo" placeholder="備考など">
             <button id="save-btn" onclick="saveTask()">保存</button>
             <button id="update-btn" onclick="updateTask()" style="display:none;">更新</button>
@@ -46,7 +46,7 @@
         </div>
     </div>
       
-<div id="settings-modal" class="modal" style="display:none;">
+    <div id="settings-modal" class="modal" style="display:none;">
         <div class="modal-content">
             <h2>設定</h2>
 
@@ -83,10 +83,6 @@
         </div>
     </div>
 
-    <nav class="fab-nav">
-        <button class="fab-btn" onclick="openForm()">＋</button>
-        <button class="fab-btn" onclick="openSettings()">⚙️</button>
-    </nav>
     <script src="script.js"></script>
 </body>
 </html>

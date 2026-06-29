@@ -211,7 +211,7 @@ async function addCategory() {
             .insert([{ name, color }]);
 
     if (error) {
-        return alert(error.message);
+        return alert("作物の追加に失敗しました: " + error.message);
     }
 
     location.reload();
@@ -222,6 +222,8 @@ function renderCropList() {
 
     const list =
         document.getElementById('crop-list');
+
+    if (!list) return;
 
     list.innerHTML =
         crops.map(c => `
@@ -247,10 +249,14 @@ async function deleteCategory(name) {
         return alert("その他は削除できません");
     }
 
-    await supabase
+    const { error } = await supabase
         .from('crops')
         .delete()
         .eq('name', name);
+
+    if (error) {
+        return alert("作物の削除に失敗しました: " + error.message);
+    }
 
     location.reload();
 }
@@ -268,9 +274,13 @@ async function addMember() {
 
     if (!name) return;
 
-    await supabase
+    const { error } = await supabase
         .from('members')
         .insert([{ name }]);
+
+    if (error) {
+        return alert("担当者の追加に失敗しました: " + error.message);
+    }
 
     location.reload();
 }
@@ -278,9 +288,10 @@ async function addMember() {
 
 function renderMemberList() {
 
-    document.getElementById('member-list')
-        .innerHTML =
+    const list = document.getElementById('member-list');
+    if (!list) return;
 
+    list.innerHTML =
         members.map(m => `
             <div>
                 ${m.name}
@@ -296,10 +307,14 @@ function renderMemberList() {
 
 async function deleteMember(name) {
 
-    await supabase
+    const { error } = await supabase
         .from('members')
         .delete()
         .eq('name', name);
+
+    if (error) {
+        return alert("担当者の削除に失敗しました: " + error.message);
+    }
 
     location.reload();
 }
@@ -317,9 +332,13 @@ async function addArea() {
 
     if (!name) return;
 
-    await supabase
+    const { error } = await supabase
         .from('areas')
         .insert([{ name }]);
+
+    if (error) {
+        return alert("エリアの追加に失敗しました: " + error.message);
+    }
 
     location.reload();
 }
@@ -327,9 +346,10 @@ async function addArea() {
 
 function renderAreaList() {
 
-    document.getElementById('area-list')
-        .innerHTML =
+    const list = document.getElementById('area-list');
+    if (!list) return;
 
+    list.innerHTML =
         areas.map(a => `
             <div>
                 ${a.name}
@@ -345,10 +365,14 @@ function renderAreaList() {
 
 async function deleteArea(name) {
 
-    await supabase
+    const { error } = await supabase
         .from('areas')
         .delete()
         .eq('name', name);
+
+    if (error) {
+        return alert("エリアの削除に失敗しました: " + error.message);
+    }
 
     location.reload();
 }
@@ -642,9 +666,10 @@ function openSettings() {
     document.getElementById('settings-modal')
         .style.display = 'flex';
     
-    // 開いたときに最初の「作物」タブボタンを緑色にしておく処理
+    // 開いたときに最初の「作物」タブボタンを選択状態にする
     switchTab('crop-tab'); 
     
+    // それぞれの一覧リストを描画する
     renderCropList();
     renderMemberList();
     renderAreaList();
@@ -658,36 +683,7 @@ function closeSettings() {
 }
 
 // =========================
-// タブ切り替え処理（追加）
-// =========================
-
-function switchTab(tabId) {
-    // すべてのタブコンテンツを一旦非表示にする
-    const contents = document.querySelectorAll('.tab-content');
-    contents.forEach(content => {
-        content.style.display = 'none';
-    });
-
-    // すべてのタブボタンから active クラスを消す
-    const buttons = document.querySelectorAll('.tab-buttons .tab-btn');
-    buttons.forEach(btn => {
-        btn.classList.remove('active');
-        btn.style.backgroundColor = '#e0e0e0'; // 未選択のボタン色
-        btn.style.color = '#333';
-    });
-
-    // 選択されたタブコンテンツを表示する
-    document.getElementById(tabId).style.display = 'block';
-
-    // 押されたボタンをアクティブにする（見た目の変更）
-    const clickedBtn = event.currentTarget;
-    clickedBtn.classList.add('active');
-    clickedBtn.style.backgroundColor = '#4caf50'; // 選択されたボタン色（緑系）
-    clickedBtn.style.color = 'white';
-}
-
-// =========================
-// タブ切り替え処理（安全版に修正）
+// タブ切り替え処理（安全版）
 // =========================
 
 function switchTab(tabId) {
@@ -712,7 +708,6 @@ function switchTab(tabId) {
     }
 
     // 押されたボタンの見た目をアクティブ（緑色）にする
-    // 引数イベントに依存しないよう、onclick属性から直接判別できるように対応
     const activeBtn = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(tabId));
     if (activeBtn) {
         activeBtn.classList.add('active');
