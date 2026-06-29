@@ -29,6 +29,10 @@
             <input type="hidden" id="edit-task-id">
             <label>作物:</label>
             <select id="task-crop"></select>
+            <label>担当者:</label>
+            <select id="task-member"></select>
+            <label>エリア:</label>
+            <select id="task-area"></select>
             <label>日付:</label>
             <input type="date" id="task-date">
             <label>作業内容:</label>
@@ -41,17 +45,36 @@
             <button onclick="closeForm()">閉じる</button>
         </div>
     </div>
-
+      
     <div id="settings-modal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h3>カテゴリー設定</h3>
-            <input type="text" id="new-crop" placeholder="作物名">
-            <input type="color" id="new-color" value="#4caf50">
-            <button onclick="addCategory()">追加</button>
-            <div id="crop-list" style="margin: 15px 0;"></div>
-            <button onclick="closeSettings()">閉じる</button>
-        </div>
+    <div class="modal-content">
+
+        <h2>設定</h2>
+
+        <h3>作物</h3>
+        <input type="text" id="new-crop" placeholder="作物名">
+        <input type="color" id="new-color" value="#4caf50">
+        <button onclick="addCategory()">追加</button>
+        <div id="crop-list" style="margin:15px 0;"></div>
+
+        <hr>
+
+        <h3>担当者</h3>
+        <input type="text" id="new-member" placeholder="担当者名">
+        <button onclick="addMember()">追加</button>
+        <div id="member-list" style="margin:15px 0;"></div>
+
+        <hr>
+
+        <h3>エリア</h3>
+        <input type="text" id="new-area" placeholder="エリア名">
+        <button onclick="addArea()">追加</button>
+        <div id="area-list" style="margin:15px 0;"></div>
+
+        <button onclick="closeSettings()">閉じる</button>
+
     </div>
+</div>
 
     <nav class="fab-nav">
         <button class="fab-btn" onclick="openForm()">＋</button>

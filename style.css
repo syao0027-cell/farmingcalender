@@ -96,3 +96,80 @@ button:hover { background-color: #6d4c41; }
     background: #f1f8e9; 
     border-radius: 10px;
 }
+
+/* ===== 設定画面専用 ===== */
+
+/* 区切り線 */
+.modal-content hr {
+    border: none;
+    border-top: 1px solid #d7ccc8;
+    margin: 15px 0;
+}
+
+/* 設定画面の見出し */
+.modal-content h3 {
+    margin: 10px 0 5px;
+    color: #6d4c41;
+    border-left: 5px solid #8bc34a;
+    padding-left: 10px;
+}
+
+/* 一覧表示部分 */
+#crop-list div,
+#member-list div,
+#area-list div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #f1f8e9;
+    margin: 8px 0;
+    padding: 10px 15px;
+
+    border-radius: 10px;
+    border-left: 5px solid #8bc34a;
+}
+
+/* 削除ボタン */
+#crop-list button,
+#member-list button,
+#area-list button {
+    background-color: #ef5350;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    font-size: 16px;
+}
+
+#crop-list button:hover,
+#member-list button:hover,
+#area-list button:hover {
+    background-color: #d32f2f;
+}
+
+/* 色表示部分 */
+#crop-list span {
+    display: inline-block;
+    width: 30px;
+    height: 20px;
+    border-radius: 5px;
+    margin-left: 10px;
+    border: 1px solid #ccc;
+}
+
+/* スマホ対応 */
+@media (max-width: 600px) {
+
+    .modal-content {
+        width: 95%;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+
+    .modal-content h2 {
+        font-size: 22px;
+        text-align: center;
+    }
+
+}
